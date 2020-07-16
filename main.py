@@ -4,14 +4,14 @@ import pandas as pd
 from tqdm import tqdm
 
 
-def downloader(name):
+def downloader():
 
     user = ''
     psw = ''
 
     folder = 'D:/Data/WB/1K'
 
-    url = 'https://land.copernicus.vgt.vito.be/PDF/datapool/Water/Water_Bodies/Water_Bodies_Global_V2/'
+    url = 'https://land.copernicus.vgt.vito.be/PDF/datapool/Water/Water_Bodies/WB_Africa_V1/'
 
     session = requests.Session()
     session.auth = (user, psw)
@@ -22,13 +22,18 @@ def downloader(name):
 
     for yr in yrs:
         for month in range(1, 13):
-            for day in ['01', '11', '21']:
+            for day in iter([1, 11, 21]):
+                if (int(yr) == 1998 and int(month) < 4) or (int(yr) == 1998 and int(month) == 4 and day == 1):
+                    continue
+
                 try:
+                    day = str(day).zfill(2)
                     month = str(month).zfill(2)
-                    product = f'WB_{yr}{month}{day}0000_AFRI_PROBAV_V2.0.1'
-                    file = f'g2_BIOPAR_WB_{yr}{month}{day}0000_AFRI_PROBAV_V2.0.1.zip'
-                    addendum = f'{yr}/{month}/{day}/{file}'
-                    url_f = f'https://land.copernicus.vgt.vito.be/PDF/datapool/Water/Water_Bodies/Water_Bodies_Global_V2/{addendum}'
+
+                    product = f'WB_{yr}{month}{day}0000_AFRI_VGT_V1.4'
+                    file = f'g2_BIOPAR_WB_{yr}{month}{day}0000_AFRI_VGT_V1.4.zip'
+                    addendum = f'{yr}/{month}/{day}/{product}/{file}'
+                    url_f = f'{url}{addendum}'
 
                     r = session.get(url_f, stream=True)
 
